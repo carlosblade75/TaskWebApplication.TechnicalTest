@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PerfectChannel.WebApi.Business;
@@ -22,13 +21,13 @@ namespace PerfectChannel.WebApi.Controllers
         [HttpGet]
         public IActionResult GetAllTasks()
         {
-            IEnumerable<TaskModel> list = null;
+            IEnumerable<TaskModel> list;
 
             try
             {
                 list = _business.GetAllTasks();
             }
-            catch(Exception ex)
+            catch
             {
                 return NotFound();
             } 
@@ -37,15 +36,79 @@ namespace PerfectChannel.WebApi.Controllers
         }
 
         [HttpPut]
-        public int AddTask(TaskModel model)
+        public IActionResult AddTask(TaskModel model)
         {
-            return _business.AddTask(model);
+            ResultModel result;
+
+            try
+            {
+                result = _business.AddTask(model);
+
+                if (!result.Success)
+                {
+                    return Ok(result);
+                }
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            return Ok(result);
         }
 
         [HttpPost]
-        public int UpdateTask(TaskModel model)
+        public IActionResult UpdateTask(TaskModel model)
         {
-            return _business.UpdateTask(model);
+            ResultModel result;
+
+            try
+            {
+                result = _business.UpdateTask(model);
+
+                if (!result.Success && result.Task == null)
+                {
+                    return NotFound();
+                } 
+                
+                if (!result.Success)
+                {
+                    return Ok(result);
+                }
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteTask(int idTask)
+        {
+            ResultModel result;
+
+            try
+            {
+                result = _business.DeleteTask(idTask);
+
+                if (!result.Success && result.Task == null)
+                {
+                    return NotFound();
+                }
+
+                if (!result.Success)
+                {
+                    return Ok(result);
+                }
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+            return Ok(result);
         }
     }
 }

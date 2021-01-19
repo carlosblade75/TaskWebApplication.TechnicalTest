@@ -6,39 +6,85 @@ namespace PerfectChannel.WebApi.Business
 {
     public class BusinessManager : IBusinessManager
     {
-        private IReposotoryTask _irepositoryTodo;
-        public BusinessManager(IReposotoryTask irepositoryTodo)
+        private IReposotoryTask _irepositoryTask;
+
+        public BusinessManager(IReposotoryTask irepositoryTask)
         {
-            _irepositoryTodo = irepositoryTodo;
+            _irepositoryTask = irepositoryTask;
         }
 
-        public int AddTask(TaskModel task)
+        public ResultModel AddTask(TaskModel task)
         {
-            task.IsCompleted = false;
+            var result = new ResultModel { Success = true };
 
-            return _irepositoryTodo.AddTodo(task);
+            if (!string.IsNullOrEmpty(task.Description))
+            {
+                task.IsCompleted = false;
+                result.Task = _irepositoryTask.AddTask(task);
+            }
+            else
+            {
+                result.Success = false;
+                result.MessageError = "Task description cannot be empty";
+            }
+
+            return result;
         }
 
-        public int DeleteTask(int idTask)
+        ///***** verificar que la tarea exista
+        public ResultModel DeleteTask(int idTask)
         {
-            var todoToDelete = _irepositoryTodo.GetTodoModelById(idTask);
+            var result = new ResultModel { Success = true };
 
-            return _irepositoryTodo.DeleteTodo(todoToDelete);
+            var taskToDelete = _irepositoryTask.GetTodoModelById(idTask);
+
+            if (taskToDelete != null)
+            {
+                result.Task = _irepositoryTask.DeleteTask(taskToDelete);
+            }
+            else
+            {
+                result.Success = false;
+                result.MessageError = "Task description cannot be found";
+            }
+
+            return result;
         }
 
         public ICollection<TaskModel> GetAllTasks()
         {
-            return _irepositoryTodo.GetAllTasks();
+            return _irepositoryTask.GetAllTasks();
         }
 
-        public int UpdateTask(TaskModel todo)
+        public ResultModel UpdateTask(TaskModel task)
         {
-            var todoToUpdate = _irepositoryTodo.GetTodoModelById(todo.Id);
+            var result = new ResultModel { Success = true };
 
-            todoToUpdate.Description = todo.Description;
-            todoToUpdate.IsCompleted = todo.IsCompleted;
+            if (!string.IsNullOrEmpty(task.Description))
+            {
+                var taskToUpdate = _irepositoryTask.GetTodoModelById(task.Id);
 
-            return _irepositoryTodo.UpdateTodo(todoToUpdate);
+                if (taskToUpdate != null)
+                {
+                    taskToUpdate.Description = task.Description;
+                    taskToUpdate.IsCompleted = task.IsCompleted;
+                    _irepositoryTask.UpdateTask(taskToUpdate);
+
+                    result.Task = taskToUpdate;
+                }
+                else
+                {
+                    result.Success = false;
+                    result.MessageError = "Task description cannot be found";
+                }
+            }
+            else
+            {
+                result.Success = false;
+                result.MessageError = "Task description cannot be empty";
+            }
+
+            return result;
         }
     }
 }

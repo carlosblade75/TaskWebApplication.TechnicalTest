@@ -5,9 +5,9 @@ namespace PerfectChannel.WebApi.Business
 {
     public interface IBusinessManager
     {
-        public int AddTask(TaskModel task);
-        public int UpdateTask(TaskModel task);
-        public int DeleteTask(int idTask);
+        public ResultModel AddTask(TaskModel task);
+        public ResultModel UpdateTask(TaskModel task);
+        public ResultModel DeleteTask(int idTask);
         public ICollection<TaskModel> GetAllTasks();
     }
 }

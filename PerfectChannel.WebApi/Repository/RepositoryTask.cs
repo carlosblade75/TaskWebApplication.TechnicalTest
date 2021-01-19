@@ -13,22 +13,24 @@ namespace PerfectChannel.WebApi.Repository
             _context = context;
         }
 
-        public int AddTodo(TaskModel task)
+        public TaskModel AddTask(TaskModel task)
         {
+            task.Id = _context.Tasks.Count() + 1;
+
             _context.Tasks.Add(task);
 
             _context.SaveChanges();
 
-            return task.Id;
+            return task;
         }
 
-        public int DeleteTodo(TaskModel task)
+        public TaskModel DeleteTask(TaskModel task)
         {
             _context.Tasks.Remove(task);
 
             _context.SaveChanges();
 
-            return task.Id;
+            return task;
         }
 
         public ICollection<TaskModel> GetAllTasks()
@@ -41,13 +43,13 @@ namespace PerfectChannel.WebApi.Repository
             return _context.Tasks.Where(task => task.Id == id).SingleOrDefault();
         }
 
-        public int UpdateTodo(TaskModel task)
+        public TaskModel UpdateTask(TaskModel task)
         {
             _context.Tasks.Update(task);
 
             _context.SaveChanges();
 
-            return task.Id;
+            return task;
         }
     }
 }

@@ -5,9 +5,9 @@ namespace PerfectChannel.WebApi.Repository
 {
     public interface IReposotoryTask
     {
-        public int AddTodo(TaskModel todo);
-        public int UpdateTodo(TaskModel todo);
-        public int DeleteTodo(TaskModel todo);
+        public TaskModel AddTask(TaskModel todo);
+        public TaskModel UpdateTask(TaskModel todo);
+        public TaskModel DeleteTask(TaskModel todo);
         public ICollection<TaskModel> GetAllTasks();
         public TaskModel GetTodoModelById(int id);
     }
