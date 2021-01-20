@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using PerfectChannel.WebApi.Models;
 using PerfectChannel.WebApi.Repository;
 
@@ -13,14 +14,14 @@ namespace PerfectChannel.WebApi.Business
             _irepositoryTask = irepositoryTask;
         }
 
-        public ResultModel AddTask(TaskModel task)
+        public async Task<ResultModel> AddTask(TaskModel task)
         {
             var result = new ResultModel { Success = true };
 
             if (!string.IsNullOrEmpty(task.Description))
             {
                 task.IsCompleted = false;
-                result.Task = _irepositoryTask.AddTask(task);
+                result.Task = await _irepositoryTask.AddTaskAsync(task);
             }
             else
             {
@@ -31,16 +32,15 @@ namespace PerfectChannel.WebApi.Business
             return result;
         }
 
-        ///***** verificar que la tarea exista
-        public ResultModel DeleteTask(int idTask)
+        public async Task<ResultModel> DeleteTask(int idTask)
         {
             var result = new ResultModel { Success = true };
 
-            var taskToDelete = _irepositoryTask.GetTodoModelById(idTask);
+            var taskToDelete = await _irepositoryTask.GetTodoModelByIdAsync(idTask);
 
             if (taskToDelete != null)
             {
-                result.Task = _irepositoryTask.DeleteTask(taskToDelete);
+                result.Task = await _irepositoryTask.DeleteTaskAsync(taskToDelete);
             }
             else
             {
@@ -51,24 +51,24 @@ namespace PerfectChannel.WebApi.Business
             return result;
         }
 
-        public ICollection<TaskModel> GetAllTasks()
+        public async Task<ICollection<TaskModel>> GetAllTasks()
         {
-            return _irepositoryTask.GetAllTasks();
+            return await _irepositoryTask.GetAllTasksAsync();
         }
 
-        public ResultModel UpdateTask(TaskModel task)
+        public async Task<ResultModel> UpdateTask(TaskModel task)
         {
             var result = new ResultModel { Success = true };
 
             if (!string.IsNullOrEmpty(task.Description))
             {
-                var taskToUpdate = _irepositoryTask.GetTodoModelById(task.Id);
+                var taskToUpdate = await _irepositoryTask.GetTodoModelByIdAsync(task.Id);
 
                 if (taskToUpdate != null)
                 {
                     taskToUpdate.Description = task.Description;
                     taskToUpdate.IsCompleted = task.IsCompleted;
-                    _irepositoryTask.UpdateTask(taskToUpdate);
+                    await _irepositoryTask.UpdateTaskAsync(taskToUpdate);
 
                     result.Task = taskToUpdate;
                 }

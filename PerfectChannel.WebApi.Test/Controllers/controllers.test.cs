@@ -4,6 +4,7 @@ using Moq;
 using PerfectChannel.WebApi.Controllers;
 using PerfectChannel.WebApi.Business;
 using PerfectChannel.WebApi.Models;
+using System.Threading.Tasks;
 
 namespace PerfectChannel.WebApi.Test.Controllers
 {
@@ -19,24 +20,24 @@ namespace PerfectChannel.WebApi.Test.Controllers
         #region " Add Method "
 
         [Test]
-        public void Controller_AddTask_Ok_Success()
+        public async Task Controller_AddTask_Ok_Success()
         {
             var businessMock = new Mock<IBusinessManager>();
 
             var resultModel = new ResultModel { Success = true, Task = new TaskModel {Description = "First task"}, MessageError = string.Empty};
 
-            businessMock.Setup(busi => busi.AddTask(It.IsAny<TaskModel>())).Returns(resultModel);
+            businessMock.Setup(busi => busi.AddTask(It.IsAny<TaskModel>())).ReturnsAsync(resultModel);
 
             _controller = new TaskController(businessMock.Object);
 
-            var result = _controller.AddTask(resultModel.Task) as OkObjectResult;
+            var result = await _controller.AddTask(resultModel.Task) as OkObjectResult;
 
             Assert.AreEqual(result.StatusCode, STATUS_OK);
             Assert.AreEqual((result.Value as ResultModel).Success, true);
         }
 
         [Test]
-        public void Controller_AddTask_No_Description_OK_No_Success()
+        public async Task Controller_AddTask_No_Description_OK_No_Success()
         {
             var businessMock = new Mock<IBusinessManager>();
 
@@ -44,17 +45,17 @@ namespace PerfectChannel.WebApi.Test.Controllers
 
             var resultModel = new ResultModel { Success = false, Task = task, MessageError = "Error Validation" };
 
-            businessMock.Setup(busi => busi.AddTask(It.IsAny<TaskModel>())).Returns(resultModel);
+            businessMock.Setup(busi => busi.AddTask(It.IsAny<TaskModel>())).ReturnsAsync(resultModel);
 
             _controller = new TaskController(businessMock.Object);
 
-            var result = _controller.AddTask(task) as OkObjectResult;
+            var result = await _controller.AddTask(task) as OkObjectResult;
 
             Assert.AreEqual(result.StatusCode, STATUS_OK);
         }
 
         [Test]
-        public void Controller_AddTask_Exception_BadRequest()
+        public async Task Controller_AddTask_Exception_BadRequest()
         {
             var businessMock = new Mock<IBusinessManager>();
 
@@ -63,11 +64,11 @@ namespace PerfectChannel.WebApi.Test.Controllers
                 Description = "First task"
             };
 
-            businessMock.Setup(busi => busi.AddTask(It.IsAny<TaskModel>())).Throws(new System.Exception());
+            businessMock.Setup(busi => busi.AddTask(It.IsAny<TaskModel>())).ThrowsAsync(new System.Exception());
 
             _controller = new TaskController(businessMock.Object);
 
-            var result = _controller.AddTask(newModelToAdd) as BadRequestResult;
+            var result = await _controller.AddTask(newModelToAdd) as BadRequestResult;
 
             Assert.AreEqual(result.StatusCode, STATUS_BADREQUEST);
         }
@@ -77,66 +78,66 @@ namespace PerfectChannel.WebApi.Test.Controllers
         #region " Update Method "
 
         [Test]
-        public void Controller_UpdateTask_OK()
+        public async Task Controller_UpdateTask_OK()
         {
             var businessMock = new Mock<IBusinessManager>();
 
             var resultModel = new ResultModel { Success = true, Task = new TaskModel(), MessageError = string.Empty };
 
-            businessMock.Setup(busi => busi.UpdateTask(It.IsAny<TaskModel>())).Returns(resultModel);
+            businessMock.Setup(busi => busi.UpdateTask(It.IsAny<TaskModel>())).ReturnsAsync(resultModel);
 
             _controller = new TaskController(businessMock.Object);
 
-            var result = _controller.UpdateTask(resultModel.Task) as OkObjectResult;
+            var result = await _controller.UpdateTask(resultModel.Task) as OkObjectResult;
 
             Assert.AreEqual(result.StatusCode, STATUS_OK);
             Assert.AreEqual((result.Value as ResultModel).Success, true);
         }
 
         [Test]
-        public void Controller_UpdateTask_NoFound()
+        public async Task Controller_UpdateTask_NoFound()
         {
             var businessMock = new Mock<IBusinessManager>();
 
             var resultModel = new ResultModel { Success = false, Task = null, MessageError = string.Empty };
 
-            businessMock.Setup(busi => busi.UpdateTask(It.IsAny<TaskModel>())).Returns(resultModel);
+            businessMock.Setup(busi => busi.UpdateTask(It.IsAny<TaskModel>())).ReturnsAsync(resultModel);
 
             _controller = new TaskController(businessMock.Object);
 
-            var result = _controller.UpdateTask(resultModel.Task) as NotFoundResult;
+            var result = await _controller.UpdateTask(resultModel.Task) as NotFoundResult;
 
             Assert.AreEqual(result.StatusCode, STATUS_NOFOUND);
         }
 
         [Test]
-        public void Controller_UpdateTask_No_Description_OK_No_Success()
+        public async Task Controller_UpdateTask_No_Description_OK_No_Success()
         {
             var businessMock = new Mock<IBusinessManager>();
 
             var resultModel = new ResultModel { Success = false, Task = new TaskModel(), MessageError = "Error Validation" };
 
-            businessMock.Setup(busi => busi.UpdateTask(It.IsAny<TaskModel>())).Returns(resultModel);
+            businessMock.Setup(busi => busi.UpdateTask(It.IsAny<TaskModel>())).ReturnsAsync(resultModel);
 
             _controller = new TaskController(businessMock.Object);
 
-            var result = _controller.UpdateTask(resultModel.Task) as OkObjectResult;
+            var result = await _controller.UpdateTask(resultModel.Task) as OkObjectResult;
 
             Assert.AreEqual(result.StatusCode, STATUS_OK);
         }
 
         [Test]
-        public void Controller_UpdateTask_Exception_BadRequest()
+        public async Task Controller_UpdateTask_Exception_BadRequest()
         {
             var businessMock = new Mock<IBusinessManager>();
 
             var resultModel = new ResultModel { Success = false, Task = new TaskModel(), MessageError = "Error" };
 
-            businessMock.Setup(busi => busi.UpdateTask(It.IsAny<TaskModel>())).Throws(new System.Exception());
+            businessMock.Setup(busi => busi.UpdateTask(It.IsAny<TaskModel>())).ThrowsAsync(new System.Exception());
 
             _controller = new TaskController(businessMock.Object);
 
-            var result = _controller.UpdateTask(resultModel.Task) as BadRequestResult;
+            var result = await _controller.UpdateTask(resultModel.Task) as BadRequestResult;
 
             Assert.AreEqual(result.StatusCode, STATUS_BADREQUEST);
         }
@@ -146,50 +147,50 @@ namespace PerfectChannel.WebApi.Test.Controllers
         #region " Delete Method "
 
         [Test]
-        public void Controller_DeleteTask_Ok()
+        public async Task Controller_DeleteTask_Ok()
         {
             var businessMock = new Mock<IBusinessManager>();
 
             var resultModel = new ResultModel { Success = true, Task = new TaskModel { Description = "First task" }, MessageError = string.Empty };
 
-            businessMock.Setup(busi => busi.DeleteTask(It.IsAny<int>())).Returns(resultModel);
+            businessMock.Setup(busi => busi.DeleteTask(It.IsAny<int>())).ReturnsAsync(resultModel);
 
             _controller = new TaskController(businessMock.Object);
 
-            var result = _controller.DeleteTask(1) as OkObjectResult;
+            var result = await _controller.DeleteTask(1) as OkObjectResult;
 
             Assert.AreEqual(result.StatusCode, STATUS_OK);
             Assert.AreEqual((result.Value as ResultModel).Success, true);
         }
 
         [Test]
-        public void Controller_DeleteTask_NoFound()
+        public async Task Controller_DeleteTask_NoFound()
         {
             var businessMock = new Mock<IBusinessManager>();
 
             var resultModel = new ResultModel { Success = false, Task = null, MessageError = string.Empty };
 
-            businessMock.Setup(busi => busi.DeleteTask(It.IsAny<int>())).Returns(resultModel);
+            businessMock.Setup(busi => busi.DeleteTask(It.IsAny<int>())).ReturnsAsync(resultModel);
 
             _controller = new TaskController(businessMock.Object);
 
-            var result = _controller.DeleteTask(1) as NotFoundResult;
+            var result = await _controller.DeleteTask(1) as NotFoundResult;
 
             Assert.AreEqual(result.StatusCode, STATUS_NOFOUND);
         }
 
         [Test]
-        public void Controller_DeleteTask_Exception_BadRequest()
+        public async Task Controller_DeleteTask_Exception_BadRequest()
         {
             var businessMock = new Mock<IBusinessManager>();
 
             var resultModel = new ResultModel { Success = true, Task = new TaskModel(), MessageError = string.Empty };
 
-            businessMock.Setup(busi => busi.DeleteTask(It.IsAny<int>())).Throws(new System.Exception());
+            businessMock.Setup(busi => busi.DeleteTask(It.IsAny<int>())).ThrowsAsync(new System.Exception());
 
             _controller = new TaskController(businessMock.Object);
 
-            var result = _controller.DeleteTask(1) as BadRequestResult;
+            var result = await _controller.DeleteTask(1) as BadRequestResult;
 
             Assert.AreEqual(result.StatusCode, STATUS_BADREQUEST);
         }

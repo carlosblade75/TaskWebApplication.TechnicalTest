@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PerfectChannel.WebApi.Business;
@@ -19,13 +20,13 @@ namespace PerfectChannel.WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllTasks()
+        public async Task<IActionResult> GetAllTasks()
         {
             IEnumerable<TaskModel> list;
 
             try
             {
-                list = _business.GetAllTasks();
+                list = await _business.GetAllTasks();
             }
             catch
             {
@@ -36,13 +37,13 @@ namespace PerfectChannel.WebApi.Controllers
         }
 
         [HttpPut]
-        public IActionResult AddTask(TaskModel model)
+        public async Task<IActionResult> AddTask(TaskModel model)
         {
             ResultModel result;
 
             try
             {
-                result = _business.AddTask(model);
+                result = await _business.AddTask(model);
 
                 if (!result.Success)
                 {
@@ -58,13 +59,13 @@ namespace PerfectChannel.WebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateTask(TaskModel model)
+        public async Task<IActionResult> UpdateTask(TaskModel model)
         {
             ResultModel result;
 
             try
             {
-                result = _business.UpdateTask(model);
+                result = await _business.UpdateTask(model);
 
                 if (!result.Success && result.Task == null)
                 {
@@ -85,13 +86,13 @@ namespace PerfectChannel.WebApi.Controllers
         }
 
         [HttpDelete]
-        public IActionResult DeleteTask(int idTask)
+        public async Task<IActionResult> DeleteTask(int idTask)
         {
             ResultModel result;
 
             try
             {
-                result = _business.DeleteTask(idTask);
+                result = await _business.DeleteTask(idTask);
 
                 if (!result.Success && result.Task == null)
                 {
